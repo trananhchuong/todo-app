@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TodoApp.Models;
+using TodoApp.Services;
 
 namespace TodoApp
 {
@@ -31,13 +32,8 @@ namespace TodoApp
             services.AddDbContext<ApiContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DevConnection")), ServiceLifetime.Transient);
 
-            //services.AddScoped<GroupService>();
-
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowSpecificOrigin",
-            //        builder => builder.WithOrigins("  http://localhost:3000"));
-            //});
+            services.AddScoped<StatusService>();
+            services.AddScoped<TodoService>();
 
             services.AddControllers();
         }

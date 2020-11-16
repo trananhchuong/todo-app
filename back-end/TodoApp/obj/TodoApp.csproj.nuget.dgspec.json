@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\MyProject\\todo\\back-end\\TodoApp\\TodoApp\\TodoApp.csproj": {}
+    "E:\\MyProject\\todo-app\\back-end\\TodoApp\\TodoApp.csproj": {}
   },
   "projects": {
-    "E:\\MyProject\\todo\\back-end\\TodoApp\\TodoApp\\TodoApp.csproj": {
+    "E:\\MyProject\\todo-app\\back-end\\TodoApp\\TodoApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\MyProject\\todo\\back-end\\TodoApp\\TodoApp\\TodoApp.csproj",
+        "projectUniqueName": "E:\\MyProject\\todo-app\\back-end\\TodoApp\\TodoApp.csproj",
         "projectName": "TodoApp",
-        "projectPath": "E:\\MyProject\\todo\\back-end\\TodoApp\\TodoApp\\TodoApp.csproj",
+        "projectPath": "E:\\MyProject\\todo-app\\back-end\\TodoApp\\TodoApp.csproj",
         "packagesPath": "C:\\Users\\chuon\\.nuget\\packages\\",
-        "outputPath": "E:\\MyProject\\todo\\back-end\\TodoApp\\TodoApp\\obj\\",
+        "outputPath": "E:\\MyProject\\todo-app\\back-end\\TodoApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

@@ -133,8 +133,6 @@ function Todo() {
       />
       <button type="submit">Add</button>
     </form>
-
-
   }
 
   if (appState.loading) return <div className="loading-box">

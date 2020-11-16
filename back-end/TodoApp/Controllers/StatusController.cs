@@ -13,24 +13,26 @@ using TodoApp.Services;
 namespace TodoApp.Controllers
 {
     [ApiController]
-    [Route("api/todo")]
-    public class TodoController : ControllerBase
+    [Route("api/status")]
+    public class StatusController : ControllerBase
     {
         private readonly ApiContext _context;
-        private readonly TodoService _todoService;
+        private StatusService _statusService;
 
-        public TodoController(ApiContext context, TodoService todoService)
+        public StatusController(ApiContext context, StatusService statusService)
         {
             _context = context;
-            _todoService = todoService;
+            _statusService = statusService;
         }
 
+    
         [HttpGet]
         public async Task<ActionResult<object>> Index()
         {
             try
             {
-                return await _todoService.GetListTodo();
+                return await _statusService.GetListStatus();
+
             }
             catch (Exception ex)
             {
@@ -40,11 +42,11 @@ namespace TodoApp.Controllers
 
         [Route("create")]
         [HttpPost]
-        public async Task<ActionResult<object>> Create([FromBody] TodoForm form)
+        public async Task<ActionResult<object>> Create([FromBody] StatusForm form)
         {
             try
             {
-                return await _todoService.Create(form);
+                return await _statusService.Create(form);
             }
             catch (Exception ex)
             {
@@ -54,31 +56,31 @@ namespace TodoApp.Controllers
 
         [Route("delete")]
         [HttpDelete]
-        public async Task<ActionResult<object>> Delete([FromQuery] Guid id) 
+        public async Task<ActionResult<object>> Delete([FromQuery] string code) 
         {
             try
             {
-                return await _todoService.Delete(id);
+                return await _statusService.Delete(code);
             }
             catch (Exception ex)
             {
                 return new ApiResponse(ex.Message);
             }
+
         }
 
         [Route("update")]
         [HttpPost]
-        public async Task<ActionResult<object>> Update([FromBody] TodoForm form)
+        public async Task<ActionResult<object>> Update([FromBody] StatusForm form)
         {
             try
             {
-                return await _todoService.Update(form);
+                return await _statusService.Update(form);
             }
             catch (Exception ex)
             {
                 return new ApiResponse(ex.Message);
             }
         }
-
     }
 }

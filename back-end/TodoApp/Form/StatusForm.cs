@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 
 namespace TodoApp.Form
 {
-    public class TodoForm
+    public class StatusForm
     {
-        public Guid? Id { get; set; }
+        public string Code { get; set; }
         public string Name { get; set; }
-        public bool? Completed { get; set; }
-        public DateTime? CreatedAt { get; set; }
 
     }
 }
