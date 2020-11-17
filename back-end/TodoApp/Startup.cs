@@ -34,6 +34,7 @@ namespace TodoApp
 
             services.AddScoped<StatusService>();
             services.AddScoped<TodoService>();
+            services.AddScoped<SubTodoService>();
 
             services.AddControllers();
         }

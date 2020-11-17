@@ -37,7 +37,7 @@ namespace TodoApp.Models
 
             modelBuilder.Entity<SubTodo>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
 
                 entity.Property(e => e.StatusCode)
                     .HasMaxLength(255)
