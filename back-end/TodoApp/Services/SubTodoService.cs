@@ -37,7 +37,6 @@ namespace TodoApp.Services
             {
                 var model = new SubTodo
                 {
-                    Completed = form.Completed,
                     Content = form.Content,
                     StatusCode = form.StatusCode,
                     TodoId = form.TodoId
@@ -75,7 +74,6 @@ namespace TodoApp.Services
                 if (subTodo == null)
                     return new ApiResponse("Không tìm thấy subTodo này!!");
 
-                subTodo.Completed = form.Completed;
                 subTodo.Content = form.Content;
                 subTodo.StatusCode = form.StatusCode;
                 subTodo.TodoId = form.TodoId;

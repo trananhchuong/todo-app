@@ -11,7 +11,6 @@ namespace TodoApp.Form
         public Guid? TodoId { get; set; }
         public string Content { get; set; }
         public string StatusCode { get; set; }
-        public bool? Completed { get; set; }
 
     }
 }

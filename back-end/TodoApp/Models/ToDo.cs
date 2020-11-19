@@ -7,12 +7,19 @@ namespace TodoApp.Models
 {
     public class ToDo
     {
-        public Guid? Id { get; set; }
+        public ToDo()
+        {
+            SubTodo = new HashSet<SubTodo>();
+        }
+
+        public Guid Id { get; set; }
         public string Name { get; set; }
-        public bool? Completed { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public string StatusCode { get; set; }
 
         public virtual ICollection<SubTodo> SubTodo { get; set; }
+        public virtual Status Status { get; set; }
+
 
     }
 }

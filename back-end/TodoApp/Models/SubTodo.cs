@@ -11,7 +11,6 @@ namespace TodoApp.Models
         public Guid? TodoId { get; set; }
         public string Content { get; set; }
         public string StatusCode { get; set; }
-        public bool? Completed { get; set; }
 
         public virtual Status StatusCodeNavigation { get; set; }
         public virtual ToDo Todo { get; set; }

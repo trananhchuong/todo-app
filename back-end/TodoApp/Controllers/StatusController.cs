@@ -24,7 +24,6 @@ namespace TodoApp.Controllers
             _context = context;
             _statusService = statusService;
         }
-
     
         [HttpGet]
         public async Task<ActionResult<object>> Index()
@@ -32,7 +31,6 @@ namespace TodoApp.Controllers
             try
             {
                 return await _statusService.GetListStatus();
-
             }
             catch (Exception ex)
             {
