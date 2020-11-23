@@ -6,7 +6,7 @@ import { TodoType } from '../../types/TypeConstants';
 import Loading from '../loading/Loading';
 import './styles/todoStyles.scss';
 import { AppState } from '../../types/InterfaceConstants';
-import { Table, Tag, Space, Checkbox } from 'antd';
+import { Table, Tag, Space, Checkbox, Button, Modal } from 'antd';
 
 const { Column, ColumnGroup } = Table;
 
@@ -90,7 +90,6 @@ const data = [
   },
 ];
 
-
 const stateDefault: AppState = {
   loading: true,
   todos: [],
@@ -98,11 +97,11 @@ const stateDefault: AppState = {
   content: ''
 }
 
-
-
 function Todo() {
 
   const [appState, setAppState] = useState<AppState>(stateDefault);
+  const [visible, setVisible] = useState(false);
+
 
   useEffect(() => {
     fetchDataTodo()
@@ -133,15 +132,13 @@ function Todo() {
   if (appState.loading) return <div className="loading-box">
     <Loading />
   </div>;
-  console.log("appState", appState)
 
   const onChangeCompleted = (e: any) => {
     console.log(`checked = ${e.target.checked}`);
   }
 
-
-  return (
-    <Table dataSource={appState.todos}>
+  const renderTable = () => {
+    return <Table dataSource={appState.todos}>
       <Column title="Name" dataIndex="name" key="name" />
       <Column
         title="Completed"
@@ -169,7 +166,50 @@ function Todo() {
         )}
       />
     </Table>
-  )
+  }
+
+  const handleAdd = () => {
+    console.log("add");
+    setVisible(true)
+  }
+
+  const renderBtnAdd = () => {
+    return <Button type="primary" onClick={handleAdd}>
+      Add
+      </Button>
+  }
+
+  const handleOk = () => {
+    setVisible(false)
+
+  };
+
+  const handleCancel = () => {
+    setVisible(false)
+  };
+
+  const renderModal = () => {
+    return (
+      <>
+        <Modal
+          title="Basic Modal"
+          visible={visible}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Modal>
+      </>
+    );
+  }
+
+  return <>
+    {renderBtnAdd()}
+    {renderTable()}
+    {renderModal()}
+  </>
 }
 
 export default Todo;
