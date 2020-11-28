@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
-import { AppProvider } from './context/AppContext';
-import { HomePage } from './components/testcontext/HomePage';
 import Todo from './components/todo/Todo';
+import { AppProvider } from './context/AppContext';
 
 const App: FC = () => {
     return (

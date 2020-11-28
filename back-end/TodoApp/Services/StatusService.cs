@@ -31,6 +31,25 @@ namespace TodoApp.Services
             }
         }
 
+        public async Task<ActionResult<object>> GetListStatusForCombo()
+        {
+            try
+            {
+                var todos = await _context.Status
+                    .Select(x => new
+                    {
+                        Label = x.Name,
+                        Value = x.Code
+                    })
+                    .ToListAsync();
+                return new ApiResponse(todos);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
+        }
+
         public async Task<ActionResult<object>> Create([FromBody] StatusForm form)
         {
             try

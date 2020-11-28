@@ -5,6 +5,11 @@ export type TodoType = {
     name: string,
 };
 
+export interface ComboType {
+    value: string,
+    label: string
+};
+
 export interface UserType {
     name: string,
     loggedIn: boolean

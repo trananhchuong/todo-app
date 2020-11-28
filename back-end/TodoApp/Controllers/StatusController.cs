@@ -38,6 +38,20 @@ namespace TodoApp.Controllers
             }
         }
 
+        [Route("get-list-for-combo")]
+        [HttpGet]
+        public async Task<ActionResult<object>> GetListForCombo()
+        {
+            try
+            {
+                return await _statusService.GetListStatusForCombo();
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
+        }
+
         [Route("create")]
         [HttpPost]
         public async Task<ActionResult<object>> Create([FromBody] StatusForm form)

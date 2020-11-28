@@ -25,6 +25,7 @@ namespace TodoApp.Services
             {
                 var query = _context.ToDo.Include(x => x.Status).AsQueryable();
                 var todos = await query.Select(x => new { 
+                    Key = x.Id,
                     x.Id,
                     x.Name,
                     Completed = x.StatusCode == TodoConstant.STATUS_CODE_COMPLETED ? true : false,
