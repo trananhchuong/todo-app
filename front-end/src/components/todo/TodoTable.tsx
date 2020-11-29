@@ -16,7 +16,7 @@ const stateDefault: AppState = {
     name: '',
     content: '',
     statusList: []
-}
+};
 
 const TodoTable = (props: any) => {
     const [appState, setAppState] = useState<AppState>(stateDefault);
@@ -24,7 +24,7 @@ const TodoTable = (props: any) => {
 
 
     useEffect(() => {
-        fetchDataTodo()
+        fetchDataTodo();
     }, []);
 
     const fetchDataTodo = () => {
@@ -48,9 +48,9 @@ const TodoTable = (props: any) => {
             });
         })
             .catch((e: any) => {
-                console.log("🚀 ~ file: TodoTable.tsx ~ line 42 ~ fetchDataTodo ~ e", e)
-            })
-    }
+                console.log('🚀 ~ file: TodoTable.tsx ~ line 42 ~ fetchDataTodo ~ e', e);
+            });
+    };
 
     if (appState.loading) {
         return <div className="loading-box">
@@ -60,7 +60,7 @@ const TodoTable = (props: any) => {
 
     const onChangeCompleted = (e: any) => {
         console.log(`checked = ${e.target.checked}`);
-    }
+    };
 
 
     const renderTable = () => {
@@ -78,7 +78,7 @@ const TodoTable = (props: any) => {
                 key="completed"
                 render={
                     (completed: any) => {
-                        const text = completed ? "completed" : "un-completed";
+                        const text = completed ? 'completed' : 'un-completed';
                         return <Checkbox
                             defaultChecked={completed}
                             onChange={onChangeCompleted}
@@ -100,16 +100,16 @@ const TodoTable = (props: any) => {
                         </Space>
                     )}
             />
-        </Table>
-    }
+        </Table>;
+    };
 
     const handleOk = (dataForm: any) => {
-        console.log("🚀 ~ file: TodoTable.tsx ~ line 93 ~ handleOk ~ dataForm", dataForm)
-        setVisible(false)
+        console.log('🚀 ~ file: TodoTable.tsx ~ line 93 ~ handleOk ~ dataForm', dataForm);
+        setVisible(false);
     };
 
     const handleCancel = () => {
-        setVisible(false)
+        setVisible(false);
     };
 
     const renderModal = () => {
@@ -128,24 +128,24 @@ const TodoTable = (props: any) => {
                 </Modal>
             </>
         );
-    }
+    };
 
     const handleAdd = () => {
-        setVisible(true)
-    }
+        setVisible(true);
+    };
 
     const renderBtnAdd = () => {
         return <Button type="primary" onClick={handleAdd}>
             Add
-      </Button>
-    }
+      </Button>;
+    };
 
     return <>
         {renderBtnAdd()}
         {renderTable()}
         {renderModal()}
-    </>
+    </>;
 
-}
+};
 
 export default TodoTable;

@@ -1,11 +1,11 @@
 import { Input } from 'antd';
 import React from 'react';
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm } from 'react-hook-form';
 
 
 
 const defaultValues = {
-    name: "chuong",
+    name: 'chuong',
 };
 
 
@@ -37,7 +37,7 @@ const TodoAddForm = (prop: any) => {
                         }}
                     />
                     {
-                        errors.name && <div style={{ color: "red" }}>
+                        errors.name && <div style={{ color: 'red' }}>
                             <p>This is required</p>
                         </div>
                     }
@@ -46,7 +46,7 @@ const TodoAddForm = (prop: any) => {
                 <input type="submit" />
             </form>
         </div>
-    )
-}
+    );
+};
 
 export default TodoAddForm;

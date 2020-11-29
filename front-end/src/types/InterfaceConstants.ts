@@ -1,4 +1,4 @@
-import { ComboType, TodoType } from "./TypeConstants";
+import { ComboType, TodoType } from './TypeConstants';
 
 export interface AppState {
     loading: boolean,

@@ -1,2 +1,2 @@
-export const getTodoApi: string = "/api/todo";
-export const getStatusApi: string = "/api/status/get-list-for-combo";
+export const getTodoApi = '/api/todo';
+export const getStatusApi = '/api/status/get-list-for-combo';

@@ -8,12 +8,12 @@ export type TodoType = {
 export interface ComboType {
     value: string,
     label: string
-};
+}
 
 export interface UserType {
     name: string,
     loggedIn: boolean
-};
+}
 
 export type AppContextType = {
     userData: UserType,
