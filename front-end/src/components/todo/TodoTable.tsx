@@ -1,7 +1,7 @@
 import { Button, Checkbox, Modal, Space, Table } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
-import { getStatusApi, getTodoApi } from '../../constant/ApiConstant';
+import React, { useEffect, useRef, useState } from 'react';
+import { getStatusApi, getTodoApi, addTodoApi } from '../../constant/ApiConstant';
 import { AppState } from '../../types/InterfaceConstants';
 import AppUtils from '../../utils/AppUtils';
 import Loading from '../loading/Loading';
@@ -9,19 +9,18 @@ import TodoAddForm from './form/TodoAddForm';
 
 const { Column } = Table;
 
-
 const stateDefault: AppState = {
     loading: true,
     todos: [],
     name: '',
     content: '',
-    statusList: []
+    statusOption: [],
+    visible: false
 };
 
 const TodoTable = (props: any) => {
     const [appState, setAppState] = useState<AppState>(stateDefault);
-    const [visible, setVisible] = useState(false);
-
+    const formTodoRef: any = useRef(null);
 
     useEffect(() => {
         fetchDataTodo();
@@ -42,7 +41,7 @@ const TodoTable = (props: any) => {
 
             setAppState({
                 ...appState,
-                statusList: statusRes,
+                statusOption: statusRes,
                 todos: todoRes,
                 loading: false
             });
@@ -103,27 +102,39 @@ const TodoTable = (props: any) => {
         </Table>;
     };
 
-    const handleOk = (dataForm: any) => {
-        console.log('🚀 ~ file: TodoTable.tsx ~ line 93 ~ handleOk ~ dataForm', dataForm);
-        setVisible(false);
+    const handleOk = async () => {
+        try {
+            const ref = formTodoRef.current;
+            const valueForm = ref.getFormsValue();
+            const response = await AppUtils.Axios.post(addTodoApi, valueForm);
+            const success = _.get(response, 'data.success', false);
+            console.log('response', response);
+
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const handleCancel = () => {
-        setVisible(false);
+        setAppState({
+            ...appState,
+            visible: false
+        });
     };
 
     const renderModal = () => {
-
         return (
             <>
                 <Modal
                     title="Add Todo"
-                    visible={visible}
+                    visible={appState.visible}
                     onOk={handleOk}
                     onCancel={handleCancel}
                 >
                     <TodoAddForm
+                        ref={formTodoRef}
                         onSubmitForm={handleOk}
+                        statusOption={appState.statusOption}
                     />
                 </Modal>
             </>
@@ -131,7 +142,10 @@ const TodoTable = (props: any) => {
     };
 
     const handleAdd = () => {
-        setVisible(true);
+        setAppState({
+            ...appState,
+            visible: true
+        });
     };
 
     const renderBtnAdd = () => {

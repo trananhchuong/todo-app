@@ -3,7 +3,8 @@ import { ComboType, TodoType } from './TypeConstants';
 export interface AppState {
     loading: boolean,
     todos: TodoType[],
-    statusList: ComboType[],
+    statusOption: ComboType[],
     name: string,
-    content: string
+    content: string,
+    visible: boolean
 }

@@ -1,29 +1,47 @@
 import { Input } from 'antd';
-import React from 'react';
+import _ from 'lodash';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-
-
+import Select from 'react-select';
+import { ComboType } from '../../../types/TypeConstants';
 
 const defaultValues = {
     name: 'chuong',
+    statusId: ''
 };
+interface Prop {
+    onSubmitForm: () => void,
+    statusOption: ComboType[],
+}
 
+const TodoAddForm = forwardRef((prop: Prop, ref: any) => {
+    const { onSubmitForm, statusOption } = prop;
+    const { handleSubmit, errors, control, getValues, trigger } = useForm({ defaultValues });
 
-const TodoAddForm = (prop: any) => {
-    const { onSubmitForm } = prop;
-    const { handleSubmit, errors, control, getValues } = useForm({ defaultValues });
+    useImperativeHandle(
+        ref,
+        () => ({
+            getFormsValue
+        }),
+    );
 
     const TextArea = <Input.TextArea
         allowClear
     />;
 
-    const onSubmit = (data: any) => {
-        onSubmitForm && onSubmitForm(data);
+    const getFormsValue = () => {
+        if (trigger()) {
+            const valuesForm = getValues();
+            return {
+                name: valuesForm.name,
+                statusCode: _.get(valuesForm, 'statusId.value')
+            };
+        }
     };
 
     return (
         <div className="App">
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form>
                 <div>
                     <label htmlFor="name">Name</label>
                     <Controller
@@ -41,12 +59,22 @@ const TodoAddForm = (prop: any) => {
                             <p>This is required</p>
                         </div>
                     }
+                    <label htmlFor="statusId">Status</label>
+                    <Controller
+                        name="statusId"
+                        as={Select}
+                        options={statusOption}
+                        control={control}
+                        rules={{
+                            required: true
+                        }}
+                    />
 
                 </div>
-                <input type="submit" />
+                <button>Add</button>
             </form>
         </div>
     );
-};
+});
 
 export default TodoAddForm;

@@ -5,7 +5,7 @@ import TodoTable from './TodoTable';
 function Todo() {
   return (
     <TodoTable />
-  )
+  );
 }
 
 export default Todo;
