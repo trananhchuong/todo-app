@@ -1,7 +1,7 @@
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Checkbox, Modal, Space, Table } from 'antd';
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
-import { getStatusApi, getTodoApi, addTodoApi } from '../../constant/ApiConstant';
+import { getTodoApi } from '../../constant/ApiConstant';
 import { AppState } from '../../types/InterfaceConstants';
 import AppUtils from '../../utils/AppUtils';
 import Loading from '../loading/Loading';
@@ -14,11 +14,14 @@ const stateDefault: AppState = {
     todos: [],
     name: '',
     content: '',
-    statusOption: [],
     visible: false
 };
 
-const TodoTable = (props: any) => {
+type Prop = {
+
+};
+
+const TodoTable = (props: Prop) => {
     const [appState, setAppState] = useState<AppState>(stateDefault);
     const formTodoRef: any = useRef(null);
 
@@ -26,29 +29,22 @@ const TodoTable = (props: any) => {
         fetchDataTodo();
     }, []);
 
-    const fetchDataTodo = () => {
-        const getTodoUrl = AppUtils.Axios.get(getTodoApi);
-        const getStatusUrl = AppUtils.Axios.get(getStatusApi);
-
-        AppUtils.Axios.all(
-            [
-                getTodoUrl,
-                getStatusUrl
-            ]
-        ).then((res: any) => {
-            const todoRes = _.get(res[0], 'data.results');
-            const statusRes = _.get(res[1], 'data.results');
-
-            setAppState({
-                ...appState,
-                statusOption: statusRes,
-                todos: todoRes,
-                loading: false
-            });
-        })
-            .catch((e: any) => {
-                console.log('🚀 ~ file: TodoTable.tsx ~ line 42 ~ fetchDataTodo ~ e', e);
-            });
+    const fetchDataTodo = async () => {
+        try {
+            const response = await AppUtils.Axios.get(getTodoApi);
+            const responseData = _.get(response, 'data');
+            if (_.get(responseData, 'success', false)) {
+                setAppState({
+                    ...appState,
+                    todos: _.get(responseData, 'results'),
+                    loading: false
+                });
+            } else {
+                //toast error message
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     if (appState.loading) {
@@ -102,18 +98,6 @@ const TodoTable = (props: any) => {
         </Table>;
     };
 
-    const handleOk = async () => {
-        try {
-            const ref = formTodoRef.current;
-            const valueForm = ref.getFormsValue();
-            const response = await AppUtils.Axios.post(addTodoApi, valueForm);
-            const success = _.get(response, 'data.success', false);
-            console.log('response', response);
-
-        } catch (error) {
-            console.log(error);
-        }
-    };
 
     const handleCancel = () => {
         setAppState({
@@ -128,13 +112,12 @@ const TodoTable = (props: any) => {
                 <Modal
                     title="Add Todo"
                     visible={appState.visible}
-                    onOk={handleOk}
-                    onCancel={handleCancel}
+                    footer={null}
                 >
                     <TodoAddForm
                         ref={formTodoRef}
-                        onSubmitForm={handleOk}
-                        statusOption={appState.statusOption}
+                        reLoadListTodo={fetchDataTodo}
+                        onCloseModal={handleCancel}
                     />
                 </Modal>
             </>
@@ -149,10 +132,15 @@ const TodoTable = (props: any) => {
     };
 
     const renderBtnAdd = () => {
-        return <Button type="primary" onClick={handleAdd}>
+        return <Button
+            type="primary"
+            onClick={handleAdd}
+        >
             Add
       </Button>;
     };
+
+    console.log('state: ', appState.visible);
 
     return <>
         {renderBtnAdd()}
