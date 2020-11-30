@@ -24,13 +24,15 @@ namespace TodoApp.Services
             try
             {
                 var query = _context.ToDo.Include(x => x.Status).AsQueryable();
-                var todos = await query.Select(x => new { 
-                    Key = x.Id,
-                    x.Id,
-                    x.Name,
-                    Completed = x.StatusCode == TodoConstant.STATUS_CODE_COMPLETED ? true : false,
-                }).ToListAsync();
-
+                var todos = await query
+                    .OrderByDescending(x => x.CreatedAt)
+                    .Select(x => new
+                    {
+                        Key = x.Id,
+                        x.Id,
+                        x.Name,
+                        Completed = x.StatusCode == TodoConstant.STATUS_CODE_COMPLETED ? true : false,
+                    }).ToListAsync();
                 return new ApiResponse(todos, todos.Count);
             }
             catch (Exception ex)
@@ -90,12 +92,12 @@ namespace TodoApp.Services
                     return new ApiResponse("Không tìm thấy todo này!!");
 
                 todo.Name = form.Name;
-             
-                if(form.StatusCode == statusCodeCompleted)
+
+                if (form.StatusCode == statusCodeCompleted)
                 {
                     var subTodoList = await _context.SubTodo.Where(x => x.TodoId == form.Id).ToListAsync();
-                    
-                    foreach(var subTodo in subTodoList)
+
+                    foreach (var subTodo in subTodoList)
                     {
                         subTodo.StatusCode = statusCodeCompleted;
                     }

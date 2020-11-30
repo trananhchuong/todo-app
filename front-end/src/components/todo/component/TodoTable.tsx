@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Checkbox, Modal, Space, Table } from 'antd';
+import { Button, Checkbox, Modal, Space, Table, Popconfirm, message } from 'antd';
 import _ from 'lodash';
-import { getTodoApi } from '../../constant/ApiConstant';
-import { AppState } from '../../types/InterfaceConstants';
-import AppUtils from '../../utils/AppUtils';
-import Loading from '../loading/Loading';
-import TodoAddForm from './form/TodoAddForm';
+import { getTodoApi } from '../../../constant/ApiConstant';
+import { AppState } from '../../../types/InterfaceConstants';
+import AppUtils from '../../../utils/AppUtils';
+import Loading from '../../loading/Loading';
+import TodoAddForm from '../form/TodoAddForm';
+import { deleteTodoApi } from '../../../constant/ApiConstant';
+
+import '../styles/todoTable.scss';
 
 const { Column } = Table;
 
@@ -33,11 +36,13 @@ const TodoTable = (props: Prop) => {
         try {
             const response = await AppUtils.Axios.get(getTodoApi);
             const responseData = _.get(response, 'data');
+
             if (_.get(responseData, 'success', false)) {
                 setAppState({
                     ...appState,
                     todos: _.get(responseData, 'results'),
-                    loading: false
+                    loading: false,
+                    visible: false
                 });
             } else {
                 //toast error message
@@ -48,8 +53,10 @@ const TodoTable = (props: Prop) => {
     };
 
     if (appState.loading) {
-        return <div className="loading-box">
-            <Loading />
+        return <div className="todo-table">
+            <div className="loading-box">
+                <Loading />
+            </div>
         </div>;
     }
 
@@ -57,6 +64,23 @@ const TodoTable = (props: Prop) => {
         console.log(`checked = ${e.target.checked}`);
     };
 
+    const handleDetele = async (id: string) => {
+        try {
+            const url = `${deleteTodoApi}?id=${id}`;
+            const response = await AppUtils.Axios.delete(url);
+            const success = _.get(response, 'data.success');
+
+            if (success) {
+                message.success('Delete to do success');
+                await fetchDataTodo();
+            } else {
+                message.error('Error!');
+            }
+        } catch (error) {
+            console.log('🚀 ~ file: TodoTable.tsx ~ line 97 ~ handleDetele ~ error', error);
+
+        }
+    };
 
     const renderTable = () => {
         return <Table
@@ -86,14 +110,24 @@ const TodoTable = (props: Prop) => {
                 title="Action"
                 key="action"
                 render={
-                    (text, record: any) => (
-                        <Space
+                    (text, record: any) => {
+                        return <Space
                             size="small"
                         >
-                            <a>Update {record.lastName}</a>
-                            <a>Delete</a>
-                        </Space>
-                    )}
+                            <Button >Update</Button>
+                            <Popconfirm
+                                title="Are you sure to delete this to do?"
+                                onConfirm={() => handleDetele(record.id)}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <Button danger>
+                                    Delete
+                                </Button>
+                            </Popconfirm>
+                        </Space>;
+                    }
+                }
             />
         </Table>;
     };
@@ -132,21 +166,23 @@ const TodoTable = (props: Prop) => {
     };
 
     const renderBtnAdd = () => {
-        return <Button
-            type="primary"
-            onClick={handleAdd}
-        >
-            Add
-      </Button>;
+        return <div className="btn-add-box">
+            <Button
+                type="primary"
+                onClick={handleAdd}
+            >
+                Add
+            </Button>
+        </div>;
+
     };
 
-    console.log('state: ', appState.visible);
 
-    return <>
+    return <div className="todo-table">
         {renderBtnAdd()}
         {renderTable()}
         {renderModal()}
-    </>;
+    </div>;
 
 };
 
