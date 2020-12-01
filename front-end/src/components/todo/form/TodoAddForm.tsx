@@ -3,38 +3,49 @@ import { Input, Button } from 'antd';
 import _ from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import Select from 'react-select';
-import { addTodoApi, getStatusApi } from '../../../constant/ApiConstant';
+import { addTodoApi, getStatusApi, showTodoApi } from '../../../constant/ApiConstant';
 import { ComboType } from '../../../types/TypeConstants';
 import AppUtils from '../../../utils/AppUtils';
 import Loading from '../../loading/Loading';
 import { useStateWithCallbackLazy } from 'use-state-with-callback';
 import '../styles/todoFormStyles.scss';
 
-const defaultValues = {
-    name: '',
-    statusId: ''
-};
-
 type Prop = {
     todoId?: string,
     reLoadListTodo: () => void,
     onCloseModal: () => void,
 }
+
+interface dataTodoForm {
+    name: string,
+    statusCode: string
+}
+
 interface ToDoFormState {
     loading: boolean,
-    statusOption: ComboType[]
+    statusOption: ComboType[],
+    dataTodo: dataTodoForm
 }
 
 const ToDoFormStateDefault: ToDoFormState = {
     loading: true,
-    statusOption: []
+    statusOption: [],
+    dataTodo: {
+        name: '',
+        statusCode: ''
+    }
 };
 
-const TodoAddForm = forwardRef((prop: Prop, ref: any) => {
+const TodoAddForm = forwardRef((prop: Prop, ref: any): JSX.Element => {
+    const { todoId } = prop;
     const [todoFormState, setTodoFromState] = useStateWithCallbackLazy<ToDoFormState>(ToDoFormStateDefault);
-    const { errors, control, getValues, trigger, handleSubmit } = useForm({ defaultValues });
-    const TextArea = <Input.TextArea allowClear />;
 
+    const initValueForm = todoFormState.dataTodo;
+
+    const { errors, control, getValues, trigger, handleSubmit } = useForm();
+
+
+    const SelectComponent = <Select />;
     useImperativeHandle(
         ref,
         () => ({
@@ -43,10 +54,38 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any) => {
     );
 
     useEffect(() => {
-        fetchData();
+        //case update
+        if (todoId) {
+            fetchDataUpdate();
+        } else {
+            fetchDataAdd();
+        }
     }, []);
 
-    const fetchData = async () => {
+    const fetchDataUpdate = async () => {
+        const requestGetTodo = AppUtils.Axios.get(`${showTodoApi}?id=${todoId}`);
+        const requestGetStatus = AppUtils.Axios.get(getStatusApi);
+
+        AppUtils.Axios.all([requestGetTodo, requestGetStatus])
+            .then((res) => {
+                const dataTodoRes = _.get(res[0], 'data.results');
+                const dataStatusRes = _.get(res[1], 'data.results');
+                setTodoFromState({
+                    ...todoFormState,
+                    loading: false,
+                    statusOption: dataStatusRes,
+                    dataTodo: {
+                        name: _.get(dataTodoRes, 'name'),
+                        statusCode: _.get(dataTodoRes, 'statusCode'),
+                    }
+                }, undefined);
+            })
+            .catch((error) => {
+                console.log('🚀 ~ file: TodoAddForm.tsx ~ line 67 ~ fetchDataUpdate ~ error', error);
+            });
+    };
+
+    const fetchDataAdd = async () => {
         try {
             const response = await AppUtils.Axios.get(getStatusApi);
             const responseData = _.get(response, 'data');
@@ -69,7 +108,7 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any) => {
             const valuesForm = getValues();
             return {
                 name: valuesForm.name,
-                statusCode: _.get(valuesForm, 'statusId.value')
+                statusCode: _.get(valuesForm, 'statusCode.value')
             };
         }
     };
@@ -83,7 +122,7 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any) => {
 
             const dataPost = {
                 name: data.name,
-                statusCode: _.get(data, 'statusId.value')
+                statusCode: _.get(data, 'statusCode.value')
             };
             const response = await AppUtils.Axios.post(addTodoApi, dataPost);
             const success = _.get(response, 'data.success', false);
@@ -107,38 +146,50 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any) => {
     if (todoFormState.loading)
         return <Loading />;
 
+
     return (
         <div className="todo-form">
             <form onSubmit={handleSubmit(handleSave)}>
                 <div>
                     <label htmlFor="name">Name</label>
                     <Controller
-                        as={TextArea}
                         name="name"
                         control={control}
-                        defaultValue=""
-                        placeholder="type name todo..."
                         rules={{
                             required: true,
                         }}
+                        render={({ onChange, onBlur }) => (
+                            <Input.TextArea
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                placeholder="type name todo..."
+                                defaultValue={initValueForm.name}
+                            />
+                        )}
                     />
                     {
                         errors.name && <div style={{ color: 'red' }}>
                             <p>This is required</p>
                         </div>
                     }
-                    <label htmlFor="statusId">Status</label>
+                    <label htmlFor="statusCode">Status</label>
                     <Controller
-                        name="statusId"
-                        as={Select}
-                        options={todoFormState.statusOption}
+                        name="statusCode"
                         control={control}
                         rules={{
                             required: true
                         }}
+                        render={({ onChange, onBlur }) => (
+                            <Select
+                                onChange={onChange}
+                                onBlur={onBlur}
+                                options={todoFormState.statusOption}
+                                value={initValueForm.statusCode}
+                            />
+                        )}
                     />
                     {
-                        errors.statusId && <div style={{ color: 'red' }}>
+                        errors.statusCode && <div style={{ color: 'red' }}>
                             <p>This is required</p>
                         </div>
                     }

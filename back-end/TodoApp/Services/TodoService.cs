@@ -41,7 +41,7 @@ namespace TodoApp.Services
             }
         }
 
-        public async Task<ActionResult<object>> Create([FromBody] TodoForm form)
+        public async Task<ActionResult<object>> Create(TodoForm form)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace TodoApp.Services
             }
         }
 
-        public async Task<ActionResult<object>> Delete([FromQuery] Guid id)
+        public async Task<ActionResult<object>> Delete(Guid id)
         {
             var todo = await _context.ToDo.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -78,7 +78,7 @@ namespace TodoApp.Services
             return new ApiResponse();
         }
 
-        public async Task<ActionResult<object>> Update([FromBody] TodoForm form)
+        public async Task<ActionResult<object>> Update(TodoForm form)
         {
             try
             {
@@ -113,5 +113,14 @@ namespace TodoApp.Services
                 return new ApiResponse(ex.Message);
             }
         }
+
+        public async Task<ActionResult<object>> Show(Guid id)
+        {
+            var todo = await _context.ToDo.FirstOrDefaultAsync(x => x.Id == id);
+            if (todo == null)
+                return new ApiResponse("Không tìm thấy todo này!!");
+            return new ApiResponse(todo);
+        }
+
     }
 }

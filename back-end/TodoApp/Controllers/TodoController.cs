@@ -80,5 +80,19 @@ namespace TodoApp.Controllers
             }
         }
 
+        [Route("show")]
+        [HttpGet]
+        public async Task<ActionResult<object>> Show([FromQuery] Guid id)
+        {
+            try
+            {
+                return await _todoService.Show(id);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
+        }
+
     }
 }

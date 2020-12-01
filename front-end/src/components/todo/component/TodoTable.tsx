@@ -9,6 +9,7 @@ import TodoAddForm from '../form/TodoAddForm';
 import { deleteTodoApi } from '../../../constant/ApiConstant';
 
 import '../styles/todoTable.scss';
+import ModalComponent from './ModalComponent';
 
 const { Column } = Table;
 
@@ -27,6 +28,7 @@ type Prop = {
 const TodoTable = (props: Prop) => {
     const [appState, setAppState] = useState<AppState>(stateDefault);
     const formTodoRef: any = useRef(null);
+    const modalRef: any = useRef(null);
 
     useEffect(() => {
         fetchDataTodo();
@@ -42,7 +44,6 @@ const TodoTable = (props: Prop) => {
                     ...appState,
                     todos: _.get(responseData, 'results'),
                     loading: false,
-                    visible: false
                 });
             } else {
                 //toast error message
@@ -114,7 +115,11 @@ const TodoTable = (props: Prop) => {
                         return <Space
                             size="small"
                         >
-                            <Button >Update</Button>
+                            <Button
+                                onClick={() => handleUpdate(record.id)}
+                            >
+                                Update
+                            </Button>
                             <Popconfirm
                                 title="Are you sure to delete this to do?"
                                 onConfirm={() => handleDetele(record.id)}
@@ -132,37 +137,12 @@ const TodoTable = (props: Prop) => {
         </Table>;
     };
 
-
-    const handleCancel = () => {
-        setAppState({
-            ...appState,
-            visible: false
-        });
-    };
-
     const renderModal = () => {
         return (
-            <>
-                <Modal
-                    title="Add Todo"
-                    visible={appState.visible}
-                    footer={null}
-                >
-                    <TodoAddForm
-                        ref={formTodoRef}
-                        reLoadListTodo={fetchDataTodo}
-                        onCloseModal={handleCancel}
-                    />
-                </Modal>
-            </>
+            <ModalComponent
+                ref={modalRef}
+            />
         );
-    };
-
-    const handleAdd = () => {
-        setAppState({
-            ...appState,
-            visible: true
-        });
     };
 
     const renderBtnAdd = () => {
@@ -174,9 +154,42 @@ const TodoTable = (props: Prop) => {
                 Add
             </Button>
         </div>;
-
     };
 
+    const handleUpdate = (id: string) => {
+        try {
+            modalRef.current.setDataChildren(
+                <TodoAddForm
+                    ref={formTodoRef}
+                    reLoadListTodo={fetchDataTodo}
+                    onCloseModal={() => setModalVisible(false)}
+                    todoId={id}
+                />
+            );
+            setModalVisible(true);
+        } catch (error) {
+            console.log('🚀 ~ file: TodoTable.tsx ~ line 169 ~ handleAdd ~ error', error);
+        }
+    };
+
+    const handleAdd = () => {
+        try {
+            modalRef.current.setDataChildren(
+                <TodoAddForm
+                    ref={formTodoRef}
+                    reLoadListTodo={fetchDataTodo}
+                    onCloseModal={() => setModalVisible(false)}
+                />
+            );
+            setModalVisible(true);
+        } catch (error) {
+            console.log('🚀 ~ file: TodoTable.tsx ~ line 169 ~ handleAdd ~ error', error);
+        }
+    };
+
+    const setModalVisible = (value: boolean): void => {
+        modalRef && modalRef.current && modalRef.current.setVisible(value);
+    };
 
     return <div className="todo-table">
         {renderBtnAdd()}
