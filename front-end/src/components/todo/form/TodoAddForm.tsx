@@ -1,9 +1,9 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import { Input, Button } from 'antd';
+import { Input, Button, message } from 'antd';
 import _ from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import Select from 'react-select';
-import { addTodoApi, getStatusApi, showTodoApi } from '../../../constant/ApiConstant';
+import { addTodoApi, getStatusApi, showTodoApi, updateTodoApi } from '../../../constant/ApiConstant';
 import { ComboType } from '../../../types/TypeConstants';
 import AppUtils from '../../../utils/AppUtils';
 import Loading from '../../loading/Loading';
@@ -18,7 +18,7 @@ type Prop = {
 
 interface dataTodoForm {
     name: string,
-    statusCode: string
+    indexStatusCode?: number
 }
 
 interface ToDoFormState {
@@ -32,20 +32,15 @@ const ToDoFormStateDefault: ToDoFormState = {
     statusOption: [],
     dataTodo: {
         name: '',
-        statusCode: ''
     }
 };
 
 const TodoAddForm = forwardRef((prop: Prop, ref: any): JSX.Element => {
     const { todoId } = prop;
     const [todoFormState, setTodoFromState] = useStateWithCallbackLazy<ToDoFormState>(ToDoFormStateDefault);
-
-    const initValueForm = todoFormState.dataTodo;
-
     const { errors, control, getValues, trigger, handleSubmit } = useForm();
+    const isUpdate = todoId ? true : false;
 
-
-    const SelectComponent = <Select />;
     useImperativeHandle(
         ref,
         () => ({
@@ -55,7 +50,7 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any): JSX.Element => {
 
     useEffect(() => {
         //case update
-        if (todoId) {
+        if (isUpdate) {
             fetchDataUpdate();
         } else {
             fetchDataAdd();
@@ -70,13 +65,17 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any): JSX.Element => {
             .then((res) => {
                 const dataTodoRes = _.get(res[0], 'data.results');
                 const dataStatusRes = _.get(res[1], 'data.results');
+                const indexStatus = _.findIndex(dataStatusRes, (item: any) => {
+                    return item.value === _.get(dataTodoRes, 'statusCode');
+                });
+
                 setTodoFromState({
                     ...todoFormState,
                     loading: false,
                     statusOption: dataStatusRes,
                     dataTodo: {
                         name: _.get(dataTodoRes, 'name'),
-                        statusCode: _.get(dataTodoRes, 'statusCode'),
+                        indexStatusCode: indexStatus,
                     }
                 }, undefined);
             })
@@ -119,13 +118,15 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any): JSX.Element => {
                 ...todoFormState,
                 loading: true
             }, undefined);
-
-            const dataPost = {
+            const dataTransform = {
                 name: data.name,
                 statusCode: _.get(data, 'statusCode.value')
             };
-            const response = await AppUtils.Axios.post(addTodoApi, dataPost);
+            const dataPost = isUpdate ? { ...dataTransform, id: todoId } : dataTransform;
+            const url = isUpdate ? updateTodoApi : addTodoApi;
+            const response = await AppUtils.Axios.post(url, dataPost);
             const success = _.get(response, 'data.success', false);
+            const messageNoti = isUpdate ? 'updated' : 'add';
 
             if (success) {
                 setTodoFromState({
@@ -134,13 +135,16 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any): JSX.Element => {
                 }, () => {
                     prop.onCloseModal();
                     prop.reLoadListTodo();
+                    message.success(`${messageNoti} success`);
+
                 });
             }
+            console.log('🚀 ~ file: TodoAddForm.tsx ~ line 117 ~ handleSave ~ data', data);
+            return;
 
         } catch (error) {
             console.log(error);
         }
-
     };
 
     if (todoFormState.loading)
@@ -158,14 +162,14 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any): JSX.Element => {
                         rules={{
                             required: true,
                         }}
-                        render={({ onChange, onBlur }) => (
-                            <Input.TextArea
-                                onChange={onChange}
-                                onBlur={onBlur}
+                        defaultValue={todoFormState.dataTodo.name}
+                        render={(propsInput) => {
+                            return <Input.TextArea
                                 placeholder="type name todo..."
-                                defaultValue={initValueForm.name}
-                            />
-                        )}
+                                value={propsInput.value}
+                                onChange={propsInput.onChange}
+                            />;
+                        }}
                     />
                     {
                         errors.name && <div style={{ color: 'red' }}>
@@ -179,12 +183,12 @@ const TodoAddForm = forwardRef((prop: Prop, ref: any): JSX.Element => {
                         rules={{
                             required: true
                         }}
-                        render={({ onChange, onBlur }) => (
+                        defaultValue={todoFormState.statusOption[todoFormState.dataTodo.indexStatusCode!]}
+                        render={(propsInput) => (
                             <Select
-                                onChange={onChange}
-                                onBlur={onBlur}
                                 options={todoFormState.statusOption}
-                                value={initValueForm.statusCode}
+                                onChange={propsInput.onChange}
+                                value={propsInput.value}
                             />
                         )}
                     />

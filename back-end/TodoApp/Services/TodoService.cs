@@ -92,6 +92,7 @@ namespace TodoApp.Services
                     return new ApiResponse("Không tìm thấy todo này!!");
 
                 todo.Name = form.Name;
+                todo.StatusCode = form.StatusCode;
 
                 if (form.StatusCode == statusCodeCompleted)
                 {

@@ -18,6 +18,7 @@ const ModalComponent = forwardRef((props: any, ref: any): JSX.Element => {
             title="Add Todo"
             visible={visible}
             footer={null}
+            destroyOnClose
         >
             {dataChildren}
         </Modal>

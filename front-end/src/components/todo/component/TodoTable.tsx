@@ -1,15 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Checkbox, Modal, Space, Table, Popconfirm, message } from 'antd';
+import { Button, Checkbox, message, Popconfirm, Space, Table } from 'antd';
 import _ from 'lodash';
-import { getTodoApi } from '../../../constant/ApiConstant';
+import React, { useEffect, useRef, useState } from 'react';
+import { deleteTodoApi, getTodoApi } from '../../../constant/ApiConstant';
 import { AppState } from '../../../types/InterfaceConstants';
 import AppUtils from '../../../utils/AppUtils';
 import Loading from '../../loading/Loading';
 import TodoAddForm from '../form/TodoAddForm';
-import { deleteTodoApi } from '../../../constant/ApiConstant';
-
 import '../styles/todoTable.scss';
 import ModalComponent from './ModalComponent';
+
 
 const { Column } = Table;
 
@@ -98,7 +97,7 @@ const TodoTable = (props: Prop) => {
                 key="completed"
                 render={
                     (completed: any) => {
-                        const text = completed ? 'completed' : 'un-completed';
+                        const text = completed ? 'completed' : 'new';
                         return <Checkbox
                             defaultChecked={completed}
                             onChange={onChangeCompleted}
