@@ -1,7 +1,7 @@
 import { Button, Checkbox, message, Popconfirm, Space, Table } from 'antd';
 import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
-import { deleteTodoApi, getTodoApi } from '../../../constant/ApiConstant';
+import { deleteTodoApi, getTodoApi, updateTodoApi } from '../../../constant/ApiConstant';
 import { AppState } from '../../../types/InterfaceConstants';
 import AppUtils from '../../../utils/AppUtils';
 import Loading from '../../loading/Loading';
@@ -60,8 +60,23 @@ const TodoTable = (props: Prop) => {
         </div>;
     }
 
-    const onChangeCompleted = (e: any) => {
-        console.log(`checked = ${e.target.checked}`);
+    const onChangeCompleted = async (e: any, record: any) => {
+        try {
+
+            const statusCode = e.target.checked ? 'completed' : 'new';
+
+            const dataPost = { ...record, statusCode };
+            const response = await AppUtils.Axios.post(updateTodoApi, dataPost);
+            const success = _.get(response, 'data.success', false);
+
+            if (success) {
+                message.success('updated success');
+                fetchDataTodo();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
     };
 
     const handleDetele = async (id: string) => {
@@ -85,6 +100,7 @@ const TodoTable = (props: Prop) => {
     const renderTable = () => {
         return <Table
             dataSource={appState.todos}
+            scroll={{ x: 500 }}
         >
             <Column
                 title="Name"
@@ -96,11 +112,11 @@ const TodoTable = (props: Prop) => {
                 dataIndex="completed"
                 key="completed"
                 render={
-                    (completed: any) => {
+                    (completed: boolean, record: any) => {
                         const text = completed ? 'completed' : 'new';
                         return <Checkbox
-                            defaultChecked={completed}
-                            onChange={onChangeCompleted}
+                            checked={completed}
+                            onChange={(e) => onChangeCompleted(e, record)}
                         >
                             {text}
                         </Checkbox>;
@@ -109,6 +125,7 @@ const TodoTable = (props: Prop) => {
             <Column
                 title="Action"
                 key="action"
+                fixed="right"
                 render={
                     (text, record: any) => {
                         return <Space
