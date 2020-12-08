@@ -17,7 +17,8 @@ const stateDefault: AppState = {
     todos: [],
     name: '',
     content: '',
-    visible: false
+    visible: false,
+    loadingTable: false
 };
 
 type Prop = {
@@ -43,6 +44,7 @@ const TodoTable = (props: Prop) => {
                     ...appState,
                     todos: _.get(responseData, 'results'),
                     loading: false,
+                    loadingTable: false
                 });
             } else {
                 //toast error message
@@ -64,6 +66,11 @@ const TodoTable = (props: Prop) => {
         try {
 
             const statusCode = e.target.checked ? 'COMPLETED' : 'NEW';
+
+            setAppState({
+                ...appState,
+                loadingTable: true
+            });
 
             const dataPost = { ...record, statusCode };
             const response = await AppUtils.Axios.post(updateTodoApi, dataPost);
@@ -101,11 +108,19 @@ const TodoTable = (props: Prop) => {
         return <Table
             dataSource={appState.todos}
             scroll={{ x: 500 }}
+            loading={appState.loadingTable}
         >
             <Column
                 title="Name"
                 dataIndex="name"
                 key="name"
+                sorter={{
+                    compare: (a, b) => {
+                        return a.name.localeCompare(b.name);
+                    },
+                    multiple: 1,
+                }}
+                sortOrder={'ascend'}
                 render={
                     (record: any, index: any) => {
                         const completed = _.get(index, 'completed');

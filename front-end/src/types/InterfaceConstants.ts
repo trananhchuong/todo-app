@@ -5,5 +5,6 @@ export interface AppState {
     todos: TodoType[],
     name: string,
     content: string,
-    visible: boolean
+    visible: boolean,
+    loadingTable: boolean
 }
