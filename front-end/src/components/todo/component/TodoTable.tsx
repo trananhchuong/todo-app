@@ -63,7 +63,7 @@ const TodoTable = (props: Prop) => {
     const onChangeCompleted = async (e: any, record: any) => {
         try {
 
-            const statusCode = e.target.checked ? 'completed' : 'new';
+            const statusCode = e.target.checked ? 'COMPLETED' : 'NEW';
 
             const dataPost = { ...record, statusCode };
             const response = await AppUtils.Axios.post(updateTodoApi, dataPost);
@@ -106,6 +106,16 @@ const TodoTable = (props: Prop) => {
                 title="Name"
                 dataIndex="name"
                 key="name"
+                render={
+                    (record: any, index: any) => {
+                        const completed = _.get(index, 'completed');
+                        const styles = {
+                            textDecoration: completed ? 'line-through' : 'unset'
+                        };
+                        return <div style={styles}>
+                            {record}
+                        </div>;
+                    }}
             />
             <Column
                 title="Completed"
