@@ -1,6 +1,8 @@
+
+import { Input } from 'antd';
 import { Button, Checkbox, message, Popconfirm, Space, Table } from 'antd';
-import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
+import _ from 'lodash';
 import { deleteTodoApi, getTodoApi, updateTodoApi } from '../../../constant/ApiConstant';
 import { AppState } from '../../../types/InterfaceConstants';
 import AppUtils from '../../../utils/AppUtils';
@@ -9,7 +11,7 @@ import TodoAddForm from '../form/TodoAddForm';
 import '../styles/todoTable.scss';
 import ModalComponent from './ModalComponent';
 
-
+const { Search } = Input;
 const { Column } = Table;
 
 const stateDefault: AppState = {
@@ -18,7 +20,7 @@ const stateDefault: AppState = {
     name: '',
     content: '',
     visible: false,
-    loadingTable: false
+    loadingTable: true
 };
 
 type Prop = {
@@ -34,9 +36,12 @@ const TodoTable = (props: Prop) => {
         fetchDataTodo();
     }, []);
 
-    const fetchDataTodo = async () => {
+    const fetchDataTodo = async (keyFilter = '') => {
         try {
-            const response = await AppUtils.Axios.get(getTodoApi);
+
+            const url = keyFilter ? `${getTodoApi}?key=${keyFilter}` : getTodoApi;
+
+            const response = await AppUtils.Axios.get(url);
             const responseData = _.get(response, 'data');
 
             if (_.get(responseData, 'success', false)) {
@@ -64,9 +69,7 @@ const TodoTable = (props: Prop) => {
 
     const onChangeCompleted = async (e: any, record: any) => {
         try {
-
             const statusCode = e.target.checked ? 'COMPLETED' : 'NEW';
-
             setAppState({
                 ...appState,
                 loadingTable: true
@@ -88,6 +91,12 @@ const TodoTable = (props: Prop) => {
 
     const handleDetele = async (id: string) => {
         try {
+
+            setAppState({
+                ...appState,
+                loadingTable: true
+            });
+
             const url = `${deleteTodoApi}?id=${id}`;
             const response = await AppUtils.Axios.delete(url);
             const success = _.get(response, 'data.success');
@@ -114,13 +123,6 @@ const TodoTable = (props: Prop) => {
                 title="Name"
                 dataIndex="name"
                 key="name"
-                sorter={{
-                    compare: (a, b) => {
-                        return a.name.localeCompare(b.name);
-                    },
-                    multiple: 1,
-                }}
-                sortOrder={'ascend'}
                 render={
                     (record: any, index: any) => {
                         const completed = _.get(index, 'completed');
@@ -186,14 +188,31 @@ const TodoTable = (props: Prop) => {
         );
     };
 
+    const handleOnSearch = (e: any): void => {
+        const key = _.get(e, 'target.value', '');
+        fetchDataTodo(key);
+    };
+
+    const handleOnSearchDebounce = _.debounce(handleOnSearch, 200);
+
     const renderBtnAdd = () => {
-        return <div className="btn-add-box">
-            <Button
-                type="primary"
-                onClick={handleAdd}
-            >
-                Add
+        return <div className="input-table">
+            <div className="search-box">
+                <Search
+                    placeholder="input search text"
+                    enterButton
+                    onChange={handleOnSearchDebounce}
+                    allowClear
+                />
+            </div>
+            <div className="btn-add-box">
+                <Button
+                    type="primary"
+                    onClick={handleAdd}
+                >
+                    Add
             </Button>
+            </div>
         </div>;
     };
 

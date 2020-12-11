@@ -1,6 +1,7 @@
 ﻿using Api.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using TodoApp.Constanst;
 using TodoApp.Form;
 using TodoApp.Models;
+using TodoApp.Utils;
 
 namespace TodoApp.Services
 {
@@ -19,11 +21,22 @@ namespace TodoApp.Services
             _context = context;
         }
 
-        public async Task<ActionResult<object>> GetListTodo()
+        public async Task<ActionResult<object>> GetListTodo(string key)
         {
             try
             {
                 var query = _context.ToDo.Include(x => x.Status).AsQueryable();
+
+                if (key != null)
+                {
+                    var keyChar = Helper.ConvertToUnSign(key.ToLower().Trim());
+
+                    query = query.Where(u => u.Name.ToLower().Trim().Contains(keyChar));
+
+                    //query = query.Where(u => GetResultSearch(u.Name, keyChar));
+                    //query = query.Where(u => Helper.ConvertToUnSign(u.Name.ToLower().Trim()).Contains(keyChar));
+                }
+
                 var todos = await query
                     .OrderByDescending(x => x.CreatedAt)
                     .Select(x => new
@@ -39,6 +52,12 @@ namespace TodoApp.Services
             {
                 return new ApiResponse(ex.Message);
             }
+        }
+
+        private bool GetResultSearch(string valueQuery, string key)
+        {
+            return Helper.ConvertToUnSign(valueQuery.ToLower().Trim()).IndexOf(
+                                    key, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
         public async Task<ActionResult<object>> Create(TodoForm form)

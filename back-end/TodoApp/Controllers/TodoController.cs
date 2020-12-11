@@ -26,11 +26,11 @@ namespace TodoApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<object>> Index()
+        public async Task<ActionResult<object>> Index([FromQuery] string key)
         {
             try
             {
-                return await _todoService.GetListTodo();
+                return await _todoService.GetListTodo(key);
             }
             catch (Exception ex)
             {

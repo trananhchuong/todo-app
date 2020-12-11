@@ -1,8 +1,25 @@
 .todo-table {
-    .btn-add-box {
+    .input-table {
         display: flex;
-        justify-content: flex-end;
+        align-items: stretch;
         margin-bottom: 10px;
+
+        .search-box {
+            flex: 1;
+        }
+
+        .btn-add-box {
+            min-width: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: 10px;
+
+            button {
+                width: 100%;
+                height: 100%;
+            }
+        }
     }
 
     .loading-box {
