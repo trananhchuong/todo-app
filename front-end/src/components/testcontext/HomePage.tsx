@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext } from 'react';
 import { useAppContext } from '../../context/AppContext';
 import { UserType } from '../../types/TypeConstants';
 
@@ -16,6 +16,6 @@ export const HomePage = () => {
     return <>
         <button onClick={handleClick}>click</button>
         <div>Name: {userData.name}</div>
-        <div>LoggedIn: {userData.loggedIn ? "true" : "false"}</div>
-    </>
-}
+        <div>LoggedIn: {userData.loggedIn ? 'true' : 'false'}</div>
+    </>;
+};

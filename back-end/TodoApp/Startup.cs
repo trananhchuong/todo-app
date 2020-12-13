@@ -25,6 +25,8 @@ namespace TodoApp
         }
 
         public IConfiguration Configuration { get; }
+        public static readonly ILoggerFactory MyLoggerFactory
+        = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -37,6 +39,7 @@ namespace TodoApp
             services.AddScoped<SubTodoService>();
 
             services.AddControllers();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,5 +63,8 @@ namespace TodoApp
                 endpoints.MapControllers();
             });
         }
+
+    
+
     }
 }

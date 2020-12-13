@@ -25,19 +25,15 @@ namespace TodoApp.Services
         {
             try
             {
-                var query = _context.ToDo.Include(x => x.Status).AsQueryable();
+                var todoList = await _context.ToDo.Include(x => x.Status).ToListAsync();
 
                 if (key != null)
                 {
                     var keyChar = Helper.ConvertToUnSign(key.ToLower().Trim());
-
-                    query = query.Where(u => u.Name.ToLower().Trim().Contains(keyChar));
-
-                    //query = query.Where(u => GetResultSearch(u.Name, keyChar));
-                    //query = query.Where(u => Helper.ConvertToUnSign(u.Name.ToLower().Trim()).Contains(keyChar));
+                    todoList = todoList.Where(u => GetResultSearch(u.Name, keyChar)).ToList();
                 }
 
-                var todos = await query
+                var todos = todoList
                     .OrderByDescending(x => x.CreatedAt)
                     .Select(x => new
                     {
@@ -45,7 +41,7 @@ namespace TodoApp.Services
                         x.Id,
                         x.Name,
                         Completed = x.StatusCode == TodoConstant.STATUS_CODE_COMPLETED ? true : false,
-                    }).ToListAsync();
+                    }).ToList();
                 return new ApiResponse(todos, todos.Count);
             }
             catch (Exception ex)

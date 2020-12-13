@@ -10,7 +10,6 @@ namespace TodoApp.Models
         public ApiContext(DbContextOptions<ApiContext> options)
          : base(options)
         {
-
         }
 
         public DbSet<Status> Status { get; set; }
