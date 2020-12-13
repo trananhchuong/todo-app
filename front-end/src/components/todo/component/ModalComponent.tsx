@@ -13,12 +13,17 @@ const ModalComponent = forwardRef((props: any, ref: any): JSX.Element => {
         }),
     );
 
+    const handleCancel = () => {
+        setVisible(false);
+    };
+
     return (
         <Modal
             title="Add Todo"
             visible={visible}
             footer={null}
             destroyOnClose
+            onCancel={handleCancel}
         >
             {dataChildren}
         </Modal>
